@@ -1904,7 +1904,7 @@ var callServer = function() {
             if(obj.result == "accepted") {
 	         window.location = "home.htm";
             } else if(obj.result == "denied") {
-                 
+                alert("Mobile user denied to authenticate!");     
             } else if(obj.result == "continue") {
                 setTimeout(callServer, 2000);              
             }
