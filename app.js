@@ -110,12 +110,13 @@ var requests = {};
 app.get('/pull', function(req, res){
     var uid = req.query.uid;
     console.log("pull request uid = " + uid);
-    var result = requests[uid];
-    console.log("pull result = " + result);
-    if (result === undefined) {
-        result = "continue";
+    var ret = requests[uid];
+    if (ret === undefined) {
+        ret = "continue";
     }
-    res.send({"result":result});    
+    console.log("pull result = " + ret);
+    requests[uid] = "continue";
+    res.send({"result":ret});    
 });
 
 app.listen(80);
