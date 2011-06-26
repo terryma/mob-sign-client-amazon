@@ -95,7 +95,7 @@ app.get('/callback', function(req, res){
     console.log(requests);
     var uid = req.query.uid;
     var authed = req.query.authed;
-    if (authed) {
+    if (authed == "true") {
         requests[uid] = "accepted";
     } else {
         requests[uid] = "denied";
