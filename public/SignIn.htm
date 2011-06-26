@@ -1879,5 +1879,45 @@ function updateCsmHit(c){var d=new Date();d.setTime(d.getTime()+(30*60*1000));va
 //--></script>
 
 
+<script type="text/javascript">
+
+var callServer = function() {
+    var xmlhttp;
+    if (window.XMLHttpRequest)
+    {// code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp=new XMLHttpRequest();
+    }
+    else
+    {// code for IE6, IE5
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    xmlhttp.onreadystatechange=function() {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
+            console.log(xmlhttp.responseText);
+            console.log(document.getElementById("uid").value);
+            var obj = eval("(" + xmlhttp.responseText + ')');          
+            console.log(obj);
+        
+            if(obj.result == "accepted") {
+	         window.location = "home.htm";
+            } else if(obj.result == "denied") {
+                 
+            } else if(obj.result == "continue") {
+                setTimeout(callServer, 2000);              
+            }
+        }
+    };
+    xmlhttp.open("GET","pull?uid="+document.getElementById("uid").value,true);
+    xmlhttp.send();
+}
+
+callServer(); 
+
+</script><div id="myDiv"><h2>Let AJAX change this text</h2></div>
+
+
 
 <span id="skype_highlighting_settings" display="none" autoextractnumbers="1"></span><object id="skype_plugin_object" location.href="https://www.amazon.com/gp/gc/payment/ref=gco_gcc_gc_email" location.hostname="www.amazon.com" style="position: absolute; visibility: hidden; left: -100px; top: -100px; " width="0" height="0" type="application/x-vnd.skype.toolbars.npplugin.4.2.0"></object></body></html>

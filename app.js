@@ -5,6 +5,9 @@
 
 var express = require('express');
 var fs = require('fs');
+var http = require('http');
+var url = require('url');
+var querystring = require('querystring');
 
 var app = module.exports = express.createServer();
 
@@ -45,40 +48,69 @@ app.get('/login', function(req, res){
 // hardcoded url, what crap, find out public ip, how? if we know this is ec2, we could make a call to metadata service to find out
 var CALL_BACK_URL = "http://184.72.101.89/callback";
 var MOB_SIGN_URL = "http://184.72.102.84/auth";
+var SITE = "amazon.com";
 app.post('/login', function(req, res){
     var sessionId = req.body.sessionId;
     var uid = req.body.uid;
     var callback = CALL_BACK_URL;
 
+
+    requests[uid] = "continue";
+
+
     var siteUrl = url.parse(MOB_SIGN_URL);
-    var site = http.createClient(siteUrl.port || 80, siteUrl.host);
     console.log("url = " + JSON.stringify(siteUrl));
 
-    var request = site.request("GET", siteUrl.pathname, {'host' : siteUrl.host});
-    request.end();
-
-    request.on('response', function(response) {
-        response.setEncoding('utf8');
-        console.log('STATUS: ' + response.statusCode);
-        response.on('data', function(chunk) {
-            console.log("DATA: " + chunk);
-        });
+    var qs = querystring.stringify({
+        "uid": uid,
+        "callback": callback,
+        "site": SITE,
+        "sessionId": "12345" // random for now
     });
 
+    console.log("query string = " + qs);
 
+    var options = {
+        host: siteUrl.host,
+        port: siteUrl.port || 80,
+        path: '/auth?'+qs
+    };
 
+    console.log("http options = " + JSON.stringify(options));
+    http.get(options, function(response) {
+          response.on('data', function(d) {
+          });
+    }).on('error', function(e) {
+          console.log("Got error: " + e.message);
+    });
+
+    res.writeHead(302, {
+        'Location': 'login'
+    });
+    res.end();
 });
 
 app.get('/callback', function(req, res){
     var uid = req.query.uid;
     var authed = req.query.authed;
-
+    if (authed) {
+        requests[uid] = "accepted";
+    } else {
+        requests[uid] = "denied";
+    }
+    res.send("success");
 });
 
-var requests = [];
+var requests = {};
 app.get('/pull', function(req, res){
     var uid = req.query.uid;
-    
+    console.log("pull request uid = " + uid);
+    var result = requests[uid];
+    console.log("pull result = " + result);
+    if (result === undefined) {
+        result = "continue";
+    }
+    res.send({"result":result});    
 });
 
 app.listen(80);
