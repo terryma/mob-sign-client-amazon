@@ -91,6 +91,8 @@ app.post('/login', function(req, res){
 });
 
 app.get('/callback', function(req, res){
+    console.log("all requests: " + JSON.stringify(requests));
+    console.log(requests);
     var uid = req.query.uid;
     var authed = req.query.authed;
     if (authed) {
