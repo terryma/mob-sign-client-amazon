@@ -48,14 +48,11 @@ app.get('/login', function(req, res){
 // hardcoded url, what crap, find out public ip, how? if we know this is ec2, we could make a call to metadata service to find out
 var CALL_BACK_URL = "http://184.72.101.89/callback";
 var MOB_SIGN_URL = "http://184.72.102.84/auth";
-var SITE = "amazon.com";
 app.post('/login', function(req, res){
-    console.log("request body");
-    console.log(req.body);
     var sessionId = req.body.sessionId;
     var uid = req.body.uid;
     var callback = CALL_BACK_URL;
-
+    var site = req.body.site;
 
     requests[uid] = "continue";
 
@@ -66,7 +63,7 @@ app.post('/login', function(req, res){
     var qs = querystring.stringify({
         "uid": uid,
         "callback": callback,
-        "site": SITE,
+        "site": site,
         "sessionId": "12345" // random for now
     });
 
