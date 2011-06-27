@@ -1,0 +1,137 @@
+
+<!-- saved from url=(0040)file:///C:/amazon/3p/linkedin/SignIn.htm -->
+<html><head>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.pack.js"></script>
+<script type="text/javascript" src="./SignIn_files/jquery.form.js"></script> 
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"></head><body><font face="verdana,arial" size="-1">
+
+<br />
+
+<div id="mobAuthError"  style="display:none;">
+<table width="90%" cellspacing="0" cellpadding="1" border="0" bgcolor="#DD9988" align="center">
+<tbody><tr><td> 
+  <table width="100%" cellspacing="0" cellpadding="8" border="0">
+  <tbody><tr><td bgcolor="#FFFFD5" class="small">
+    <img width="17" border="0" height="17" src="https://images-na.ssl-images-amazon.com/images/G/01/x-locale/common/icons/exclamation-error-red._V192241243_.gif">
+    <b class="sans"><font color="#990000">Important Message</font></b>
+      <br><font color="#990000">The mobile user denied to authenticate.</font><br>
+  </p></td></tr>
+  </tbody></table>
+</td></tr>
+</tbody></table>
+</div>
+
+<div id="continueMessage"  style="display:none;">
+<table width="100%" cellspacing="0" cellpadding="8" border="0">
+  <tbody><tr><td bgcolor="#FFFFD5" class="small">
+    
+    <b class="sans"><font color="#000099">Important Message</font></b>
+      <br><font color="#000099">An authentication request has been sent to mobile device.</font><br>
+  </td></tr>
+</tbody></table>
+</div>
+
+<div id="acceptMessage"  style="display:none;">
+<table width="100%" cellspacing="0" cellpadding="8" border="0">
+  <tbody><tr><td bgcolor="#FFFFD5" class="small">
+    
+    <b class="sans"><font color="#009900">Important Message</font></b>
+      <br><font color="#009900">You are authenticated!</font><br>
+  </td></tr>
+</tbody></table>
+</div>
+
+<br />
+
+
+<center><table cellpadding="2" cellspacing="0" border="0" id="ap_table">
+<tbody><tr><td bgcolor="blue"><table cellpadding="0" cellspacing="0" border="0" width="100%"><tbody><tr><td bgcolor="blue" align="center" style="padding:2;padding-bottom:4"><b><font size="-1" color="white" face="verdana,arial"><b>Enter your login</b></font></b></td></tr>
+<tr><td bgcolor="white" style="padding:5"><br>
+
+
+<form name="sign-in" id="sign-in" action="../login" method="POST">
+<input type="hidden" name="site" value="google.com">
+<input type="hidden" name="sessionId" value="some random shit">
+<input type="hidden" name="callback" value="http://www.google.com">
+<center><table>
+<tbody><tr><td><font face="verdana,arial" size="-1">Login:</font></td><td><input type="text" id="uid"></td></tr>
+<tr><td><font face="verdana,arial" size="-1">&nbsp;</font></td><td><font face="verdana,arial" size="-1"><input type="submit" value="Enter"></font></td></tr>
+<tr><td colspan="2"><font face="verdana,arial" size="-1">&nbsp;</font></td></tr>
+</tbody></table></center>
+</form>
+</td></tr></tbody></table></td></tr></tbody></table>
+</center></font></body>
+
+<script type="text/javascript">
+
+/*var loginPost = function() {
+    var xmlhttp;
+    if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp=new XMLHttpRequest();
+    }
+    else {// code for IE6, IE5
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    xmlhttp.onreadystatechange=function() {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+            pollStatus();            
+        }
+    };
+
+//    var params = "site=amazon.com&sessionId=some random shit&uid="
+  //               + document.getElementById("uid").value;
+    xmlhttp.open("POST", "login", true);
+    xmlhttp.send("<input type=\"hidden\" name=\"sessionId\" value=\"some random shit\">");
+
+};*/
+
+var showStatus = function(messageID) {
+    $("#continueMessage").hide();    
+    $("#mobAuthError").hide();
+    $("#acceptMessage").hide();    
+    $("#"+messageID).show();    
+};
+
+var redirect = function() {
+    $(location).attr('href', 'homeGoogle.htm')
+};
+
+var pollStatus = function() {
+    var xmlhttp;
+    if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp=new XMLHttpRequest();
+    }
+    else {// code for IE6, IE5
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    xmlhttp.onreadystatechange=function() {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+            //console.log(xmlhttp.responseText);
+            //console.log(document.getElementById("uid").value);
+            var obj = eval("(" + xmlhttp.responseText + ')');          
+            //console.log(obj);
+            
+            if(obj.result == "accepted") {
+                showStatus("acceptMessage");
+                setTimeout(redirect, 2000);  
+            } else if(obj.result == "denied") {
+                showStatus("mobAuthError");
+            } else if(obj.result == "continue") {
+                setTimeout(pollStatus, 2000);              
+            }
+        }
+    };
+    xmlhttp.open("GET","pull?uid="+document.getElementById("uid").value,true);
+    xmlhttp.send();
+};
+
+$(document).ready(function() {   
+   $('#sign-in').ajaxForm(function() { 
+       showStatus("continueMessage");        
+       pollStatus();               
+   });
+}); 
+</script>
+</html>
