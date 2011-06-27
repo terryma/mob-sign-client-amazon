@@ -50,6 +50,8 @@ var CALL_BACK_URL = "http://184.72.101.89/callback";
 var MOB_SIGN_URL = "http://184.72.102.84/auth";
 var SITE = "amazon.com";
 app.post('/login', function(req, res){
+    console.log("request body");
+    console.log(req.body);
     var sessionId = req.body.sessionId;
     var uid = req.body.uid;
     var callback = CALL_BACK_URL;
